@@ -1,0 +1,50 @@
+
+POST https://localhost:8080/auth/
+Content-Type: application/json 
+
+{
+}
+###
+
+POST https://localhost:8080/auth/signup 
+Content-Type: application/json 
+
+{
+    "email":"testing3@gmail.com",
+    "password": "test",
+    "username": "the_test3"
+}
+###
+POST https://localhost:8080/auth/Login 
+Content-Type: application/json 
+
+{
+    "email":"testing3@gmail.com",
+    "password": "test"
+}
+###
+
+POST https://localhost:8080/posts/posts
+Content-Type: application/json 
+
+{
+    "name": "Test Post 2",
+    "message": "This is a test post message.",
+    "username": "the_test3"
+}
+###
+GET  https://localhost:8080/posts/viewposts
+Content-Type: application/json 
+
+{
+   
+}
+###
+
+DELETE  https://localhost:8080/posts/posts/65241b1a7bc069137d08f382
+Content-Type: application/json 
+
+{
+   
+}
+###

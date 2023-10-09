@@ -1,0 +1,9 @@
+sdXK.7Mg*5c2ATx
+apds
+
+
+{
+    "email":"testing@gmail.com",
+    "password": "test",
+    "username": "the_test"
+}
