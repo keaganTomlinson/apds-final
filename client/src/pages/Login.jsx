@@ -10,6 +10,8 @@ const Login = () => {
     password: "",
   });
   const { email, password } = inputValue;
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setInputValue({
@@ -22,6 +24,7 @@ const Login = () => {
     toast.error(err, {
       position: "bottom-left",
     });
+
   const handleSuccess = (msg) =>
     toast.success(msg, {
       position: "bottom-left",
@@ -29,6 +32,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      handleError("Email and password are required.");
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const { data } = await axios.post(
         "https://localhost:8080/auth/login",
@@ -37,24 +46,25 @@ const Login = () => {
         },
         { withCredentials: true }
       );
-      console.log(data);
+
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
-          navigate("/");
+          navigate("/Home");
         }, 1000);
       } else {
         handleError(message);
       }
     } catch (error) {
-      console.log(error);
+      handleError("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
+      setInputValue({
+        email: "",
+        password: "",
+      });
     }
-    setInputValue({
-      ...inputValue,
-      email: "",
-      password: "",
-    });
   };
 
   return (
@@ -81,7 +91,9 @@ const Login = () => {
             onChange={handleOnChange}
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Submit"}
+        </button>
         <span>
           Already have an account? <Link to={"/signup"}>Signup</Link>
         </span>

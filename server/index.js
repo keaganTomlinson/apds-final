@@ -1,21 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const app = express();
-require("dotenv").config();
+const https = require('https');
+const fs = require('fs');
+const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
 const postRoute = require("./Routes/PostRoute");
-const {MONGO_URL}  = process.env;
-const PORT = 8080;
-const https = require('https');
-const fs = require('fs');
+require("dotenv").config();
 
-mongoose
-  .connect(MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+const app = express();
+const { MONGO_URL, PORT } = process.env;
+
+// Connect to MongoDB
+mongoose.connect(MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => {
     console.log("MongoDB is connected successfully");
     console.log("mongo string ", MONGO_URL);
@@ -26,17 +27,12 @@ mongoose
     process.exit(1);
   });
 
+const credentials = {
+  key: fs.readFileSync("./key/key.pem"),
+  cert: fs.readFileSync("./key/cert.pem"),
+};
 
-  const credentials = {
-    key: fs.readFileSync("./key/key.pem"),
-    cert: fs.readFileSync("./key/cert.pem"),
-  };
-  
-  const httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(PORT, () => {
-    const address = `https://localhost:${PORT}`;
-    console.log(`HTTPS server is listening on ${address}`);
-  });
+const httpsServer = https.createServer(credentials, app);
 
 app.use(
   cors({
@@ -46,13 +42,30 @@ app.use(
   })
 );
 
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
+
+app.use(morgan("dev")); // Log requests to the console using the 'dev' format
 app.use(cookieParser());
 app.use(express.json());
+
 // Mount authentication routes under '/auth'
 app.use("/auth", authRoute);
 
 // Mount post-related routes under '/posts'
 app.use("/posts", postRoute);
 
-module.exports = app;
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+});
 
+httpsServer.listen(PORT, () => {
+  const address = `https://localhost:${PORT}`;
+  console.log(`HTTPS server is listening on ${address}`);
+});
+
+module.exports = app;
