@@ -35,8 +35,7 @@ const Signup = () => {
         "https://localhost:8080/auth/signup",
         {
           ...inputValue,
-        },
-        { withCredentials: true }
+        }
       );
       const { success, message } = data;
       if (success) {

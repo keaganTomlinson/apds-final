@@ -10,8 +10,8 @@ POST https://localhost:8080/auth/signup
 Content-Type: application/json 
 
 {
-    "email":"testing3@gmail.com",
-    "password": "test",
+    "email":"testing4@gmail.com",
+    "password": "test4",
     "username": "the_test3"
 }
 ###
@@ -19,7 +19,7 @@ POST https://localhost:8080/auth/Login
 Content-Type: application/json 
 
 {
-    "email":"testing3@gmail.com",
+    "email":"testing4@gmail.com",
     "password": "test"
 }
 ###

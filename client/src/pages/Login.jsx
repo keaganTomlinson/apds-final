@@ -30,6 +30,12 @@ const Login = () => {
       position: "bottom-left",
     });
 
+  const handleLoginSuccess = (token) => {
+    localStorage.setItem("token", token);
+    // Redirect the user to the home page after successful login
+    navigate("/");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -40,19 +46,17 @@ const Login = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "https://localhost:8080/auth/login",
+        "https://localhost:8080/auth/Login",
         {
           ...inputValue,
-        },
-        { withCredentials: true }
+        }
       );
 
-      const { success, message } = data;
+      const { success, message, token } = data;
       if (success) {
         handleSuccess(message);
-        setTimeout(() => {
-          navigate("/Home");
-        }, 1000);
+        // Call the function to handle successful login with the received token
+        handleLoginSuccess(token);
       } else {
         handleError(message);
       }
@@ -75,6 +79,7 @@ const Login = () => {
           <label htmlFor="email">Email</label>
           <input
             type="email"
+            id="email"
             name="email"
             value={email}
             placeholder="Enter your email"
@@ -85,12 +90,14 @@ const Login = () => {
           <label htmlFor="password">Password</label>
           <input
             type="password"
+            id="password"
             name="password"
             value={password}
             placeholder="Enter your password"
             onChange={handleOnChange}
           />
         </div>
+
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Submit"}
         </button>

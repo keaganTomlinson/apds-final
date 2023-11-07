@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const https = require('https');
 const fs = require('fs');
 const morgan = require('morgan');
@@ -34,18 +33,13 @@ const credentials = {
 
 const httpsServer = https.createServer(credentials, app);
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 app.use(morgan("dev")); // Log requests to the console using the 'dev' format
 app.use(cookieParser());
